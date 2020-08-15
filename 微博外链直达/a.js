@@ -33,20 +33,6 @@ function check_url() {
 	}
 }
 
-function add_listener(feed_list) {
-	feed_list.addEventListener(
-		'click',
-		(e) => {
-			log_info('点击了');
-			if (e.srcElement.title == '网页链接' && e.srcElement.href.indexOf('//t.cn/') != -1) {
-				log_info(e.srcElement.href + '被点击');
-				let url = set_url(e.srcElement.href, e.srcElement);
-				alert(132312);
-			}
-		},
-		true
-	);
-}
 
 async function set_url(tcn, t_node, has_check) {
 	if (has_check[tcn]) {
@@ -68,7 +54,7 @@ async function set_url(tcn, t_node, has_check) {
 		console.error(tcn);
 		return;
 	}
-	let url = response.responseHeaders.split(' ')[10];
+	let url = response.responseHeaders.split(' ')[10].slice(0,-7);
 	log_info('请求成功：' + url);
 	if (url.startsWith('http')) {
 		t_node.setAttribute('href', url);

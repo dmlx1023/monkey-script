@@ -9,7 +9,7 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_log
 // @run-at document-idle
-// @connect      *
+// @connect      t.cn
 // ==/UserScript==
 
 (function() {
