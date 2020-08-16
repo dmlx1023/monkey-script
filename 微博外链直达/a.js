@@ -15,7 +15,15 @@ function observe(target) {
 	};
 	let observer = new MutationObserver(function(mutations) {
 		mutations.forEach(function(mutation) {
-			check_url();
+			if (mutation.type == 'childList' && mutation.addedNodes !== null) {
+				for (let i = 0; i < mutation.addedNodes.length; i++) {
+					let n = mutation.addedNodes[i];
+					if (n.tagName == 'DIV' && n.querySelectorAll("a[title='网页链接']").length > 0) {
+						log_info('我出现啦');
+						check_url();
+					}
+				}
+			}
 		});
 	});
 	observer.observe(target, config);
@@ -33,7 +41,6 @@ function check_url() {
 	}
 }
 
-
 async function set_url(tcn, t_node, has_check) {
 	if (has_check[tcn]) {
 		if (has_check[tcn].startsWith('http')) {
@@ -42,6 +49,7 @@ async function set_url(tcn, t_node, has_check) {
 		return;
 	}
 	let response;
+
 	try {
 		response = await get_url(tcn, t_node);
 	} catch (error) {
@@ -54,7 +62,7 @@ async function set_url(tcn, t_node, has_check) {
 		console.error(tcn);
 		return;
 	}
-	let url = response.responseHeaders.split(' ')[10].slice(0,-7);
+	let url = response.responseHeaders.split(' ')[10].slice(0, -7);
 	log_info('请求成功：' + url);
 	if (url.startsWith('http')) {
 		t_node.setAttribute('href', url);
@@ -73,6 +81,7 @@ const xhr = (option) =>
 	});
 
 function get_url(tcn, t_node) {
+	if (tcn.indexOf('//t.cn/') == -1) return;
 	return xhr({
 		method: 'GET',
 		synchronous: false,
@@ -86,6 +95,9 @@ function get_url(tcn, t_node) {
 
 function log_info(txt) {
 	if (setting.log) {
-		GM_log(txt);
+		GM_log( txt );
 	}
+}
+function checkType(ele) {
+	return Object.prototype.toString.call(ele).replace(/[\[\]]/g, '').split(' ')[1].toLowerCase();
 }
