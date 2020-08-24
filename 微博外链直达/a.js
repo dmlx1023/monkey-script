@@ -1,5 +1,21 @@
+// ==UserScript==
+// @name         微博链接跳转
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  try to take over the world!
+// @author       zycat
+// @match        *://*.weibo.com/*
+// @grant        GM_xmlhttpRequest
+// @grant        GM_log
+// @run-at document-idle
+// @connect      *
+// ==/UserScript==
+
+(function() {
+
+    'use strict';
 var setting = {
-	log: true //是否打印日志
+	log: false //是否打印日志
 };
 log_info('微博外链跳转 v1.0 load');
 var _body = document.getElementsByTagName('body')[0];
@@ -64,9 +80,12 @@ async function set_url(tcn, t_node, has_check) {
 	}
 	let url = response.responseHeaders.split(' ')[10].slice(0, -7);
 	log_info('请求成功：' + url);
-	if (url.startsWith('http')) {
+    log_info('请求成功：' + response.responseHeaders);
+	if (url.startsWith('http')&&response.responseHeaders.indexOf('.qq.')==-1) {
 		t_node.setAttribute('href', url);
-	}
+	}else{
+        url='white_url'
+    }
 	has_check[tcn] = url;
 	return url;
 }
@@ -101,3 +120,6 @@ function log_info(txt) {
 function checkType(ele) {
 	return Object.prototype.toString.call(ele).replace(/[\[\]]/g, '').split(' ')[1].toLowerCase();
 }
+
+
+})();
