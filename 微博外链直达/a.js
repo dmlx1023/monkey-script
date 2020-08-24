@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         微博链接跳转
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.4
 // @description  try to take over the world!
 // @author       zycat
 // @match        *://*.weibo.com/*
@@ -37,7 +37,9 @@ function observe(target) {
 					if (n.tagName == 'DIV' && n.querySelectorAll("a[title='网页链接']").length > 0) {
 						log_info('我出现啦');
 						check_url();
-					}
+					}else if(location.host=='s.weibo.com'&&n.tagName == 'DIV' && n.querySelectorAll('a[href*="//t.cn/"]').length > 0){
+                        check_url();
+                    }
 				}
 			}
 		});
@@ -46,7 +48,13 @@ function observe(target) {
 }
 function check_url() {
 	// 遍历网页链接，如果链接是t.cn开头的就set试一下
-	let link_list = document.querySelectorAll("a[title='网页链接']");
+    let link_list=[]
+    if(location.host=='s.weibo.com'){
+    link_list = document.querySelectorAll('a[href*="//t.cn/"]')
+    }else{
+    link_list = document.querySelectorAll("a[title='网页链接']");
+    }
+	
 	for (let i = 0; i < link_list.length; i++) {
 		let node = link_list[i];
 		let href = node.href;
@@ -90,15 +98,16 @@ async function set_url(tcn, t_node, has_check) {
 	return url;
 }
 
-const xhr = (option) =>
-	new Promise((resolve, reject) => {
+
+function xhr(option){
+    return new Promise((resolve, reject) => {
 		GM_xmlhttpRequest({
 			...option,
 			onerror: reject,
 			onload: resolve
 		});
 	});
-
+}
 function get_url(tcn, t_node) {
 	if (tcn.indexOf('//t.cn/') == -1) return;
 	return xhr({
